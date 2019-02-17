@@ -1,0 +1,10 @@
+[package]
+name = "rust-os"
+version = "0.1.0"
+authors = ["tanaka takayuki <takayuki.1981.0317@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+
+[build-dependencies]
+cc = "1.0.25"
