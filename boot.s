@@ -5,8 +5,8 @@
 
 _start:
     /* Set up stack pointer. */
-    lui     sp, %hi(stacks + 8192)
-    ori     sp, sp, %lo(stacks + 8192)
+    lui     sp, %hi(stacks + 4096)
+    ori     sp, sp, %lo(stacks + 4096)
     /* Now jump to the rust world; __start_rust.  */
     j       __start_rust
 
@@ -14,4 +14,4 @@ _start:
 
 .global stacks
 stacks:
-    .skip 8192
+    .skip 4096
