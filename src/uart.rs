@@ -10,8 +10,6 @@ const UART0_DIV: u32 = 0x1001_3018;
 const FIFO_FULL: u32 = 0x8000_0000;
 const FIFO_EMPTY: u32 = 0x8000_0000;
 
-const NUMBER: [&str; 10] = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
-
 // 初期化
 pub fn init() {
     let div = UART0_DIV as *mut u32;
@@ -44,21 +42,21 @@ fn send_u8(c: &u8) {
     }
 }
 
-// 書き込み（HEX）
-fn send_num(c: &u8) {
-    match *c {
-        0 => send("0"),
-        1 => send("1"),
-        2 => send("2"),
-        3 => send("3"),
-        4 => send("4"),
-        5 => send("5"),
-        6 => send("6"),
-        7 => send("7"),
-        8 => send("8"),
-        9 => send("9"),
-        _ => send("Not Support Number")
+// HEX変換
+fn send_hex(d: u8) {
+    // 0x30/0x37を加算しアスキーコードへ変換
+    match d < 0xA {
+        true => send_u8(&(d + 0x30)),
+        _ => send_u8(&(d + 0x37)),
     }
+}
+
+// 書き込み（HEX）
+pub fn send_num(c: u8) {
+    send("0x");
+    send_hex((c & 0xF0) >> 4);
+    send_hex(c & 0x0F);
+    send(" ");
 }
 
 // 読み込み
