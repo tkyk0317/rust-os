@@ -10,29 +10,40 @@ pub fn start() {
 // シェル
 fn shell() {
     uart::send("> ");
-    let mut prev = 0;
-    let mut len = 0;
+    let mut i = 0;
+    let mut buf = [0x00u8; 128];
     loop {
         let c = uart::recv();
+
+        // 改行コードをキャッチ
         if c == 0x0d {
             uart::send("\n");
 
-            // 前の入力がqであれば抜ける
-            if len == 1 && prev == 0x71 {
+            // 前の入力がquitであれば抜ける
+            if true == is_quit(&buf[0..i]) {
                 return;
             }
-            uart::send("> ");
 
-            // コマンド初期化
-            len = 0;
+            // バッファ位置を初期化し、プロンプト表示
+            i = 0;
+            uart::send("> ");
         }
         else {
             uart::send_byte(&[c]);
 
-            // 前の入力を保存
-            prev = c;
-            len += 1;
+            // 長さを超えた場合、巻き戻る
+            if i > buf.len() - 1 {
+                i = 0;
+            }
+
+            // 入力文字を保存
+            buf[i] = c;
+            i += 1;
         }
     }
 }
 
+// quitコマンド確認
+fn is_quit(buf: &[u8]) -> bool {
+    buf[0] as char == 'q' && buf[1] as char == 'u' && buf[2] as char == 'i' && buf[3] as char == 't'
+}
