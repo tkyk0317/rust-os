@@ -1,7 +1,6 @@
 use crate::uart;
 
 pub fn start() {
-    uart::init();
     uart::send("Boot Start\n");
     shell();
     uart::send("Boot End\n");
@@ -20,7 +19,7 @@ fn shell() {
             uart::send("\n");
 
             // 前の入力がquitであれば抜ける
-            if true == is_quit(&buf[0..i]) {
+            if i > 0 && true == is_quit(&buf[0..i]) {
                 return;
             }
 

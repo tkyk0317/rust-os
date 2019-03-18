@@ -1,5 +1,3 @@
-OUTPUT_ARCH("riscv")
-
 ENTRY(_start)
 
 SECTIONS
@@ -10,6 +8,8 @@ SECTIONS
     .text :
     {
         *(.boot)
+        . = 0x80000100;
+        *(.vector_table)
         *(.text .text.*)
     }
 

@@ -7,6 +7,11 @@ const UART0_IE: u32 = 0x1001_3010;
 const UART0_IP: u32 = 0x1001_3014;
 const UART0_DIV: u32 = 0x1001_3018;
 
+// PLIC for UART0
+const PLIC_UART0_SOURCE: u32 = 3;
+const UART0_PLIC_PRIORITY: u32 = 0x0C00_0000 + (PLIC_UART0_SOURCE * 4);
+const UART0_PLIC_ENABLE: u32 = 0x0C00_2000 + (PLIC_UART0_SOURCE / 32);
+
 const FIFO_FULL: u32 = 0x8000_0000;
 const FIFO_EMPTY: u32 = 0x8000_0000;
 
@@ -14,8 +19,14 @@ const FIFO_EMPTY: u32 = 0x8000_0000;
 pub fn init() {
     let div = UART0_DIV as *mut u32;
     let rxctrl = UART0_RXCTRL as *mut u32;
+    let ie = UART0_IE as *mut u32;
+    let plic = UART0_PLIC_ENABLE as *mut u32;
+    let plic_priority = UART0_PLIC_PRIORITY as *mut u32;
     unsafe {
+        *plic |= 1 << (PLIC_UART0_SOURCE % 32);
+        *plic_priority = 0x0000_0007;
         *rxctrl = 0x0000_0001;
+        *ie = 0x0000_0002;
         *div |= 6510;
     }
 }
