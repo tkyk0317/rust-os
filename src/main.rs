@@ -19,13 +19,13 @@ pub extern "C" fn __start_rust() -> ! {
 fn init() {
     // 割り込みを無効にし、各種設定を実施
     unsafe {
-        asm!("csrw mstatus, zero" ::: "volatile");
-        asm!("li a0, 0x100" ::: "volatile");
-        asm!("csrw mscratch, a0" ::: "volatile");
-        asm!("li a0, 0x808" ::: "volatile");
-        asm!("csrw mie, a0" ::: "volatile");
-        asm!("li a0, 0x80000100" ::: "volatile");
-        asm!("csrw mtvec, a0" ::: "volatile");
+        asm!("csrw mstatus, zero");
+        asm!("li a0, 0x100");
+        asm!("csrw mscratch, a0");
+        asm!("li a0, 0x808");
+        asm!("csrw mie, a0");
+        asm!("li a0, 0x80000100");
+        asm!("csrw mtvec, a0");
     }
 
     // UARTの初期化
@@ -33,7 +33,7 @@ fn init() {
 
     // 割り込み有効
     unsafe {
-        asm!("csrsi mstatus, 8" ::: "volatile");
+        asm!("csrsi mstatus, 8");
     }
 }
 
