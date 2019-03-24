@@ -6,7 +6,7 @@ endif
 CFLAGS="-march=rv32i -mabi=ilp32"
 
 all:
-	@CC=$(CC) CFLAGS=$(CFLAGS) cargo b
+	@CC=$(CC) CFLAGS=$(CFLAGS) cargo b -vv
 
 run:
 	@CC=$(CC) CFLAGS=$(CFLAGS) cargo r

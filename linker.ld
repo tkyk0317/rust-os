@@ -8,8 +8,6 @@ SECTIONS
     .text :
     {
         *(.boot)
-        . = 0x80000100;
-        *(.vector_table)
         *(.text .text.*)
     }
 

@@ -17,31 +17,51 @@ pub extern "C" fn __start_rust() -> ! {
 }
 
 fn init() {
-    // 割り込みを無効にし、各種設定を実施
+    // 割り込み無効化
     unsafe {
         asm!("csrw mstatus, zero");
-        asm!("li a0, 0x100");
-        asm!("csrw mscratch, a0");
-        asm!("li a0, 0x808");
-        asm!("csrw mie, a0");
-        asm!("li a0, 0x80000100");
-        asm!("csrw mtvec, a0");
+        asm!("csrw mie, zero");
     }
 
     // UARTの初期化
     uart::init();
 
-    // 割り込み有効
+    // timer割り込み初期化
+    init_timer();
+
+    // 割り込み有効化
     unsafe {
+        // mscratch設定
+        asm!("li a0, 0x100");
+        asm!("csrw mscratch, a0");
+
+        // 割り込み有効
         asm!("csrsi mstatus, 8");
+        asm!("li a0, 0x888");
+        asm!("csrw mie, a0");
+     }
+}
+
+fn init_timer() {
+    let mtimecmp = 0x0200_4000 as *mut u64;
+    unsafe {
+        *mtimecmp = 1000;
     }
 }
 
-#[link_section = ".vector_table"]
 #[no_mangle]
-pub extern "C" fn interrupt() {
-    // シリアル割り込みチェック
-    uart::send("interruptted\n");
+pub extern "C" fn __interrupt(mcause: u32) {
+    // timer割り込み半知恵
+    if mcause == 0x80000007 {
+        // mtimecmp更新
+        let mtimecmp = 0x0200_4000 as *mut u64;
+        unsafe {
+            *mtimecmp += 1000;
+        }
+    }
+    else {
+        uart::send("no timer\n");
+    }
 }
 
 use core::panic::PanicInfo;
