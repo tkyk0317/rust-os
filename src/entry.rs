@@ -19,7 +19,7 @@ fn shell() {
             uart::send("\n");
 
             // 前の入力がquitであれば抜ける
-            if i > 0 && true == is_quit(&buf[0..i]) {
+            if i == 4 && true == is_quit(&buf[0..i]) {
                 return;
             }
 
