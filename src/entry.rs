@@ -44,5 +44,10 @@ fn shell() {
 
 // quitコマンド確認
 fn is_quit(buf: &[u8]) -> bool {
-    buf[0] as char == 'q' && buf[1] as char == 'u' && buf[2] as char == 'i' && buf[3] as char == 't'
+    if buf.len() == 4 {
+        buf[0] as char == 'q' && buf[1] as char == 'u' && buf[2] as char == 'i' && buf[3] as char == 't'
+    }
+    else {
+        false
+    }
 }
