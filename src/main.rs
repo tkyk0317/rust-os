@@ -37,31 +37,40 @@ fn init() {
 
         // 割り込み有効
         asm!("csrsi mstatus, 8");
-        asm!("li a0, 0x888");
+        asm!("li a0, 0x080");
         asm!("csrw mie, a0");
      }
 }
 
 fn init_timer() {
+    // タイマー値初期化
     let mtimecmp = 0x0200_4000 as *mut u64;
+    let mtime = 0x0200_BFF8 as *const u64;
     unsafe {
-        *mtimecmp = 1000;
+        *mtimecmp = (*mtime + 1000);
     }
 }
 
 #[no_mangle]
 pub extern "C" fn __interrupt(mcause: u32) {
-    // timer割り込み半知恵
+    // timer割り込み判定
     if mcause == 0x80000007 {
-        // mtimecmp更新
-        let mtimecmp = 0x0200_4000 as *mut u64;
-        unsafe {
-            *mtimecmp += 1000;
-        }
+        timer_interrupt();
     }
     else {
         uart::send("no timer\n");
     }
+}
+
+// timer割り込み処理
+fn timer_interrupt() {
+    // mtimecmp更新
+    let mtimecmp = 0x0200_4000 as *mut u64;
+    let mtime = 0x0200_BFF8 as *const u64;
+    unsafe {
+        *mtimecmp = (*mtime + 1000);
+    }
+    uart::send("timer interrupt\n");
 }
 
 use core::panic::PanicInfo;
